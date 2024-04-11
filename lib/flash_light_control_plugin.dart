@@ -29,4 +29,14 @@ class FlashLightControlPlugin {
       }
     }
   }
+
+  static Future<void> version() async {
+    try {
+      await _channel.invokeMethod('getPlatformVersion');
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        print("Failed to getPlatformVersion: '${e.message}'.");
+      }
+    }
+  }
 }

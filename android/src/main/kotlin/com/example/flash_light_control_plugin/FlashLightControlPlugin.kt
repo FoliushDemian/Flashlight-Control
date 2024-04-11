@@ -14,6 +14,12 @@ import android.hardware.camera2.CameraManager
 class FlashLightControlPlugin : FlutterPlugin, MethodCallHandler {
   private lateinit var channel: MethodChannel
   private lateinit var context: Context
+  static const MethodChannel _channel = MethodChannel('flash_light_control_plugin');
+
+  static Future<String?> getPlatformVersion() async {
+    final String? version = await _channel.invokeMethod('getPlatformVersion');
+    return version;
+  }
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flash_light_control_plugin")
@@ -25,6 +31,7 @@ class FlashLightControlPlugin : FlutterPlugin, MethodCallHandler {
     when (call.method) {
       "turnOn" -> turnOnFlashlight(result)
       "turnOff" -> turnOffFlashlight(result)
+      "getPlatformVersion" -> getPlatformVersion(result)
       else -> result.notImplemented()
     }
   }
@@ -53,5 +60,10 @@ class FlashLightControlPlugin : FlutterPlugin, MethodCallHandler {
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
     channel.setMethodCallHandler(null)
+  }
+
+  private fun getPlatformVersion(result: Result) {
+    val androidVersion = android.os.Build.VERSION.RELEASE
+    result.success(androidVersion)
   }
 }
